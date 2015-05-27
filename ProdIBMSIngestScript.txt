@@ -1,0 +1,338 @@
+/**
+ * Created with IntelliJ IDEA.
+ * User: calcheng
+ * Date: 1/3/13
+ * Time: 4:27 PM
+ * To change this template use File | Settings | File Templates.
+ */
+
+
+import com.theplatform.ingest.adapter.api.AdapterException
+import com.theplatform.ingest.adapter.api.AdapterResultItem
+import com.theplatform.data.api.objects.type.CategoryInfo
+import com.theplatform.data.api.objects.type.DateOnly
+import com.theplatform.data.api.objects.type.Duration
+import com.theplatform.ingest.data.objects.IngestMedia
+import com.theplatform.ingest.data.objects.IngestMediaFile
+import com.theplatform.ingest.data.objects.WorkflowOption
+import java.text.SimpleDateFormat
+import com.theplatform.media.api.data.objects.Media
+import com.theplatform.media.api.data.objects.TransferInfo
+import com.theplatform.ingest.data.objects.IngestOptions
+import com.theplatform.ingest.data.objects.IngestMethod
+
+// The Watch Folder agent adds the name of the source metafile
+// to the map of additional parameters. You can read it in your
+// script (using the filename key), should you need to record it.
+// The path information is relative to watch folder URL.
+// The path also includes the filename.
+def filename = adapterSettings.getAdditionalParameterMap().get("filename")
+def filepath = adapterSettings.getAdditionalParameterMap().get("filePath")
+def countryMap = ["Hong Kong":"hk",Indonesia:"id",Singapore:"sg",Malaysia:"my",Thailand:"th",Philippines:"ph",Taiwan:"tw",Japan:"jp",Australia:"au"]
+def accountID = "http://access.auth.theplatform.com/data/Account/2337729561"  //prod
+//def accountID = "http://access.auth.theplatform.com/data/Account/2307139592" //dev
+def VOD_thumb = "http://devapps.foxsportsasia.com/img-fsp/FICVOD.png"
+def Live_thumb = "http://devapps.foxsportsasia.com/img-fsp/FICLIVE.png"
+
+def updateGuid = "Updated"
+
+def records
+
+try
+{
+    // XmlSlurper is an XML parser built into Groovy.
+    records = new XmlSlurper().parse(metadata)
+}
+catch(Exception e)
+{
+    // If the XML isn't parseable, throw an AdapterException from here.
+    // Script execution halts and the error is returned to the caller.
+    throw new AdapterException(e)
+}
+
+def VodOffers = records.VodOfferList.VodOffer
+
+def mediaCountry = records.VodOfferList.serviceName
+matcher = (mediaCountry =~ /FOX SPORTS PLAY /);
+mediaCountry = matcher.replaceAll("");
+
+VodOffers.each
+        {
+            // If the metadata has what we want, this will remain null.
+            Exception ex = null
+
+            // Create a new IngestMedia item. We'll populate
+            // its fields with elements from the input XML.
+            IngestMedia media = new IngestMedia()
+            Media oldMedia = null
+
+            Boolean update = false
+            Boolean delete = false
+
+            //check and throw error if either programKey or specialAiringCategory is missing
+            if (it.VodOfferItem.VodAsset.programKey == "")
+                ex = new Exception ("programKey is missing for media with offerKey " + it.offerKey)
+            else if (it.VodOfferItem.specialAiringCategory.@code == "")
+                ex = new Exception ("specialAiringCategory code is missing for media with offerKey " + it.offerKey)
+
+
+             String oldprogramKeyGUID = it.VodOfferItem.VodAsset.programKey.toString() + it.VodOfferItem.specialAiringCategory.@code 
+             String programKeyGUID = it.VodOfferItem.VodAsset.VodMaterial.physicalId.text() + it.VodOfferItem.specialAiringCategory.@code 
+
+             // We may be attempting to do either a delete or update,
+             // so see if the identifier for the media object exists in
+             // the current mpx account.
+
+           // if (mediaHelper.mediaExistsByGuid(programKeyGUID))
+              if (mediaHelper.mediaExistsByGuid(programKeyGUID))
+             {
+                // We found the guid in the system
+                update = true
+                oldMedia = mediaHelper.getMediaByGuid(programKeyGUID)
+                media.guid = programKeyGUID 
+
+             }else if(mediaHelper.mediaExistsByGuid(oldprogramKeyGUID)){
+                update = true
+                oldMedia = mediaHelper.getMediaByGuid(oldprogramKeyGUID)
+                media.guid = oldprogramKeyGUID
+              
+             } else{
+                update = false;
+                media.guid = programKeyGUID 
+             }
+ 
+
+
+            ingestMediaThumbnailFiles = []
+
+            // If we're not deleting, then process the rest of the input data.
+            if (!delete)
+            {
+                // If an element is missing, it.elName returns "" and has a size of zero.
+                // If this is the case for a required value on a new item, then create an
+                // adapter exception and attach it to the result item and then add to the queue.
+
+                   // if (it.VodOfferDescription.offerName != "")   
+                        // the original test condition, 
+                        //now modified to not overwrite the title
+
+                        if (oldMedia == null || oldMedia.title == null || oldMedia.title.isEmpty())
+
+                    media.title = it.VodOfferDescription.offerName
+
+                else
+                {
+                    // If we're creating we can't have a blank title.
+                    if (!update)
+                    {
+                        ex = new Exception ("Media item requires some kind of title.")
+                    }
+                }
+
+                // If we haven't created the exception, process the rest of the XML.
+                if (ex == null)
+                {
+                    // Start setting properties.
+                    if (oldMedia == null)
+                        media.countries = [countryMap.get(mediaCountry)]
+                    else
+                        {
+                            List<String> list = new ArrayList<String>();
+                            list.addAll(oldMedia.countries)
+
+                            if (list.contains(countryMap.get(mediaCountry)))   //if already present, then it's a re-ingest and do not duplicate
+                                media.countries = [countryMap.get(mediaCountry)]
+                            else
+                                list.add(countryMap.get(mediaCountry))
+                                media.countries = list.toArray()
+                        }
+
+                //add a default country to all entries.
+                List<String> list2 = new ArrayList<String>()
+                if (media.countries != null) {
+                        list2.addAll(media.countries)
+                        }
+                if (! list2.contains("jp")) {
+                        list2.add("jp")
+                        }
+                if (! list2.contains("ph")) {
+                        list2.add("ph")
+                        }
+                if (! list2.contains("tw")) {
+                        list2.add("tw")
+                        }
+						if (! list2.contains("vn")) {
+                        list2.add("vn")
+                        }					
+                media.countries = list2.toArray()
+
+
+
+
+                    //duplicate country field here so that it could be queried
+                    media.setCustomValue(accountID, "allowedCountry", media.countries)
+
+                    media.excludeCountries = false
+
+                    //create linked thumbnails on new media objects only
+                    if (!update)
+                    {
+                        IngestMediaFile mediaFileThumb = new IngestMediaFile()
+                        TransferInfo transferInfo = new TransferInfo()
+                        transferInfo.supportsStreaming = true
+
+                        IngestOptions ingestOptions = new IngestOptions()
+                        ingestOptions.method = IngestMethod.Link
+
+                        if (it.VodOfferItem.specialAiringCategory.text() == "VOD")
+                        {
+                            mediaFileThumb.sourceUrl = VOD_thumb
+                        }
+                        else
+                        {
+                            mediaFileThumb.sourceUrl = Live_thumb
+                        }
+                        mediaFileThumb.assetTypes = ["Mezzanine Image"]
+                        mediaFileThumb.transferInfo = transferInfo
+                        mediaFileThumb.ingestOptions = ingestOptions
+
+                        ingestMediaThumbnailFiles << mediaFileThumb
+
+                        media.setThumbnails(ingestMediaThumbnailFiles.toArray(new IngestMediaFile[ingestMediaThumbnailFiles.size()]))
+                    }
+
+
+                    if (oldMedia == null || oldMedia.description == null ||oldMedia.description.isEmpty())
+                        media.description = it.VodOfferItem.VodAsset.titleShortSynopsis
+                    else
+                        media.description = oldMedia.description
+
+                    if (oldMedia == null || oldMedia.text == null || oldMedia.text.isEmpty())
+                        media.text = it.VodOfferDescription.offerLongSynopsis
+                    else
+                        media.text = oldMedia.text
+
+                   //dates always overwrite
+                  SimpleDateFormat pdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+                    media.availableDate = pdf.parse(SimpleDateFormatConvertor(it.offerStartDateTime.text()).toString().replace("+0000", "SGT"))
+                    media.expirationDate = pdf.parse(SimpleDateFormatConvertor(it.offerExpiryDate.text()).toString().replace("+0000", "SGT"))
+
+                    //offerKeys always overwrite
+                    media.setCustomValue(accountID, "offerKey", it.offerKey.text())
+							  media.setCustomValue(null, "isLive",false)
+							  media.setCustomValue(null, "isFree", false)
+
+                    setCustomField(accountID, oldMedia, media, "offerShortSynopsis", it.VodOfferDescription.offerShortSynopsis.text())
+                    setCustomField(accountID, oldMedia, media, "offerMarketingMsg", it.VodOfferDescription.offerMarketingMsg.text())
+                    setCustomField(accountID, oldMedia, media, "specialAiringCategory", it.VodOfferItem.specialAiringCategory.text())
+                    setCustomField(accountID, oldMedia, media, "sourceChannel", it.VodOfferItem.sourceChannel.text())
+                    setCustomField(accountID, oldMedia, media, "programKey", it.VodOfferItem.VodAsset.programKey.text())
+                    setCustomField(accountID, oldMedia, media, "dealType", it.VodOfferItem.VodAsset.dealType.text())
+                    setCustomField(accountID, oldMedia, media, "seriesName", it.VodOfferItem.VodAsset.seriesName.text())
+                    setCustomField(accountID, oldMedia, media, "seasonNo", it.VodOfferItem.VodAsset.seasonNo.text())
+                    setCustomField(accountID, oldMedia, media, "episodeNo", it.VodOfferItem.VodAsset.episodeNo.text())
+                    setCustomField(accountID, oldMedia, media, "productionYear", it.VodOfferItem.VodAsset.productionYear.text())
+                    setCustomField(accountID, oldMedia, media, "parentalRating", it.VodOfferItem.VodAsset.parentalRating.text())
+                    setCustomField(accountID, oldMedia, media, "widescreenFlag", it.VodOfferItem.VodAsset.widescreenFlag.text())
+                    setCustomField(accountID, oldMedia, media, "letterboxFlag", it.VodOfferItem.VodAsset.letterboxFlag.text())
+                    setCustomField(accountID, oldMedia, media, "physicalId", it.VodOfferItem.VodAsset.VodMaterial.physicalId.text())
+                    setCustomField(accountID, oldMedia, media, "deliveryUri", it.VodOfferItem.VodAsset.VodMaterial.deliveryUri.text())
+                    setCustomField(accountID, oldMedia, media, "audioLanguage", it.VodOfferItem.VodAsset.VodMaterial.audioLanguages.text())
+                    setCustomField(accountID, oldMedia, media, "aspectRatio", calculateAspectRatio(it.VodOfferItem.VodAsset.aspectRatio.text()))
+                    setCustomField(accountID, oldMedia, media, "duration", calculateDuration(it.VodOfferItem.VodAsset.duration.text()))
+
+                    keywords = it.VodOfferItem.VodAsset.seriesName.text()
+
+                    it.VodOfferItem.VodAsset.customProperties.property.each{property->
+                        setCustomField(accountID, oldMedia, media, property.@name.toString().replace(' ',''), property.@value.toString())
+                        if (property.@name.toString() == "Sport Series" && !property.@value.toString().isEmpty())
+                            keywords = keywords + ", " + property.@value.toString()
+                        if (property.@name.toString() == "Competitor A" && !property.@value.toString().isEmpty())
+                            keywords = keywords + ", " + property.@value.toString()
+                        if (property.@name.toString() == "Competitor B" && !property.@value.toString().isEmpty())
+                            keywords = keywords + ", " + property.@value.toString()
+                        if (property.@name.toString() == "Venue" && !property.@value.toString().isEmpty())
+                            keywords = keywords + ", " + property.@value.toString().tokenize(',').get(0)
+                    }
+                    //always overwrite keywords
+                    media.keywords = keywords
+
+
+                    // Read the category elements into Category objects.
+                    // Categories have to match those available to the account context, but if
+                    // those don't match mpx will catch that (and all other system-required fields).
+                    // We only have to worry about our custom exceptions in this script.
+
+                    catArrList = []
+                    CategoryInfo catInfo = new CategoryInfo()
+								String categoryname = "";
+                    if (it.VodOfferItem.VodAsset.subGenre.text())
+                       categoryname = replaceXmlSpecialCharacters(it.VodOfferItem.VodAsset.genre.text().toString())  +  "/" +  replaceXmlSpecialCharacters(it.VodOfferItem.VodAsset.subGenre.text().toString().replace("/","or"))
+                    else
+                        categoryname = it.VodOfferItem.VodAsset.genre.text()
+
+									
+								if(categoryname == "Golf/Masters, The"){
+									catInfo.name = "Golf/Masters"
+								}else{
+									catInfo.name = categoryname;
+								}
+
+                    media.categories = catArrList << catInfo;
+                }
+            }
+
+            // Create the result item and populate it with either the media data
+            // or the exception for a missing description. Then add to the queue.
+            AdapterResultItem resultItem = new AdapterResultItem()
+
+            if (ex != null)
+            {
+                resultItem.setException(ex)
+            }
+            else
+            {
+                
+                resultItem.media = media
+                
+            }
+
+            resultQueue.put(resultItem)
+        }
+
+def calculateDuration(duration_text) {
+    ArrayList k = duration_text.tokenize(':')
+    return (k.get(0).toInteger() * 60 * 60 + k.get(1).toInteger() * 60 + k.get(2).toInteger())
+}
+
+def calculateAspectRatio (aspectRatio_text) {
+    String [] splitAspectRatioText = aspectRatio_text.split()
+    ar = splitAspectRatioText[splitAspectRatioText.length - 1].minus("(").minus(")")
+    ArrayList l = ar.tokenize(':')
+    return (l.get(0).toFloat() / l.get(1).toFloat()).trunc(2)
+}
+
+def SimpleDateFormatConvertor (datetime_text)
+{
+    return datetime_text.substring(0,datetime_text.lastIndexOf(":")) + datetime_text.substring(datetime_text.lastIndexOf(":")+1,datetime_text.length())
+
+}
+
+//overwrites existing media object custom field if and only if it is empty
+def setCustomField (accountID, oldMediaObject, ingestMediaObject, customFieldString, xmlString)
+{
+    if (oldMediaObject == null || oldMediaObject.getCustomValue(accountID,customFieldString) == null)
+        ingestMediaObject.setCustomValue(accountID, customFieldString, xmlString)
+    else
+        ingestMediaObject.setCustomValue(accountID,customFieldString,oldMediaObject.getCustomValue(accountID,customFieldString))
+}
+
+def replaceXmlSpecialCharacters(xmlString){
+    
+    xmlString.replaceAll("&lt;","<");
+    xmlString.replaceAll("&amp;","&");
+    xmlString.replaceAll("&gt;",">");
+    xmlString.replaceAll("&quot;","\"");
+    xmlString.replaceAll("&apos;","'");
+
+}
