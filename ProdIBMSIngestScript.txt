@@ -62,64 +62,64 @@ def mediaTitle
 def VOD_thumb = "http://devapps.foxsportsasia.com/img-fsp/FICVOD.png"
 def Live_thumb = "http://devapps.foxsportsasia.com/img-fsp/FICLIVE.png"
 
-// Define Shows Dictionary and Default images for shows 
+// Define Shows Dictionary and Default images for shows
 // Later confirm weather all the fox sports Fit are shows if so we don't have to input full title
-		Dictionary showsDictionary = new Hashtable();
+Dictionary showsDictionary = new Hashtable();
 
-		List<String> showList = new ArrayList<String>()
-		showList.add("FOX Sports Fit - Sister Hiit");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/50/490/Sister Hiit__738887.jpg");
-		showsDictionary.put("FOX Sports Fit - Sister Hiit",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("FOX Sports Fit - 101 Exercises To Do Before You Die");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/101__229813.png");
-		showsDictionary.put("FOX Sports Fit - 101 Exercises To Do Before You Die",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("Sport Confidential");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_DP/970/207/sportconfidential.jpeg");
-		showsDictionary.put("Sport Confidential",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("FOX SPORTS Fit - Reebok Crossfit");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/crossfit.png");
-		showsDictionary.put("FOX SPORTS Fit - Reebok Crossfit",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("Badminton Unlimited");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/19/355/Badminton Unlimited.jpg");
-		showsDictionary.put("Badminton Unlimited",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("National Icons");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/198/143/National_Icons__947224.jpg");
-		showsDictionary.put("National Icons",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("FOX Sports Fit - Fit For Fashion");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/FFF1__782848.png");
-		showsDictionary.put("FOX Sports Fit - Fit For Fashion",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("FOX Sports Fit - STAR Block Workout");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/755/299/star block.png");
-		showsDictionary.put("FOX Sports Fit - STAR Block Workout",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("FOX Sports Fit - Kirei Yoga");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/yoga__721808.jpg");
-		showsDictionary.put("FOX Sports Fit - Kirei Yoga",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("Fox Sports Central");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/148/315/FSCWEB.jpg");
-		showsDictionary.put("Fox Sports Central",showList)
-		
-		showList = new ArrayList<String>()
-		showList.add("KIA World Extreme Games");
-		showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/791/479/world extreme games.jpg");
-		showsDictionary.put("KIA World Extreme Games",showList)
+List<String> showList = new ArrayList<String>()
+showList.add("FOX Sports Fit - Sister Hiit");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/50/490/Sister Hiit__738887.jpg");
+showsDictionary.put("FOX Sports Fit - Sister Hiit",showList)
+
+showList = new ArrayList<String>()
+showList.add("FOX Sports Fit - 101 Exercises To Do Before You Die");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/101__229813.png");
+showsDictionary.put("FOX Sports Fit - 101 Exercises To Do Before You Die",showList)
+
+showList = new ArrayList<String>()
+showList.add("Sport Confidential");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_DP/970/207/sportconfidential.jpeg");
+showsDictionary.put("Sport Confidential",showList)
+
+showList = new ArrayList<String>()
+showList.add("FOX SPORTS Fit - Reebok Crossfit");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/crossfit.png");
+showsDictionary.put("FOX SPORTS Fit - Reebok Crossfit",showList)
+
+showList = new ArrayList<String>()
+showList.add("Badminton Unlimited");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/19/355/Badminton Unlimited.jpg");
+showsDictionary.put("Badminton Unlimited",showList)
+
+showList = new ArrayList<String>()
+showList.add("National Icons");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/198/143/National_Icons__947224.jpg");
+showsDictionary.put("National Icons",showList)
+
+showList = new ArrayList<String>()
+showList.add("FOX Sports Fit - Fit For Fashion");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/FFF1__782848.png");
+showsDictionary.put("FOX Sports Fit - Fit For Fashion",showList)
+
+showList = new ArrayList<String>()
+showList.add("FOX Sports Fit - STAR Block Workout");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/755/299/star block.png");
+showsDictionary.put("FOX Sports Fit - STAR Block Workout",showList)
+
+showList = new ArrayList<String>()
+showList.add("FOX Sports Fit - Kirei Yoga");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/754/823/yoga__721808.jpg");
+showsDictionary.put("FOX Sports Fit - Kirei Yoga",showList)
+
+showList = new ArrayList<String>()
+showList.add("Fox Sports Central");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/148/315/FSCWEB.jpg");
+showsDictionary.put("Fox Sports Central",showList)
+
+showList = new ArrayList<String>()
+showList.add("KIA World Extreme Games");
+showList.add("http://images.foxplayasia.com/images/Fox_Sports_Asia_Prod_CP/791/479/world extreme games.jpg");
+showsDictionary.put("KIA World Extreme Games",showList)
 
 
 VodOffers.each
@@ -264,12 +264,13 @@ VodOffers.each
 
 			//offerKeys always overwrite
 			media.setCustomValue(accountID, "offerKey", it.offerKey.text())
-			
+
 			// Newly added fields in MPX
 			// all the media added using this script is set false for isLive and isFree
 			// check weather meadia title starts withs any of the shows if so set to true for isShow
 			media.setCustomValue(null, "isChannel",false)
 			media.setCustomValue(null, "isFree", false)
+			media.setCustomValue(null, "isShow", isShow(showsDictionary,mediaTitle))
 			// check weather the media is show if yes set isShow = true & replace the default image for show
 			checkForShow(media,showsDictionary,it.VodOfferItem.specialAiringCategory.text(),update)
 
@@ -307,36 +308,6 @@ VodOffers.each
 			}
 			//always overwrite keywords
 			media.keywords = keywords
-			
-//			//create linked thumbnails on new media objects only
-//			if (!update)
-//			{
-//				IngestMediaFile mediaFileThumb = new IngestMediaFile()
-//				TransferInfo transferInfo = new TransferInfo()
-//				transferInfo.supportsStreaming = true
-//
-//				IngestOptions ingestOptions = new IngestOptions()
-//				ingestOptions.method = IngestMethod.Link
-//
-//				if (it.VodOfferItem.specialAiringCategory.text() == "VOD")
-//				{
-//					mediaFileThumb.sourceUrl = VOD_thumb
-//					media.setCustomValue(null, "isLive",false)
-//				}
-//				else
-//				{
-//					mediaFileThumb.sourceUrl = Live_thumb
-//					media.setCustomValue(null, "isLive",true)
-//				}
-//				mediaFileThumb.assetTypes = ["Mezzanine Image"]
-//				mediaFileThumb.transferInfo = transferInfo
-//				mediaFileThumb.ingestOptions = ingestOptions
-//
-//				ingestMediaThumbnailFiles << mediaFileThumb
-//
-//				media.setThumbnails(ingestMediaThumbnailFiles.toArray(new IngestMediaFile[ingestMediaThumbnailFiles.size()]))
-//			}
-
 
 			// Read the category elements into Category objects.
 			// Categories have to match those available to the account context, but if
@@ -381,57 +352,74 @@ VodOffers.each
 }
 
 // This method loops through the showsDictionay to check wheather the current media is show or not
+
+boolean isShow(Dictionary showDict,String title){
+	boolean isShow = false;
+
+	for (String key : showDict.keySet()) {
+
+		if(title.toLowerCase().startsWith(key.toLowerCase())){
+			isShow = true
+//			imageUrl  = showDict.get(key).get(1);
+			break
+		}
+		isShow = false
+
+	}
+
+	return isShow
+}
 boolean checkForShow(IngestMedia media,Dictionary showDict,String airingCategory,boolean isRecordUpdate){
 	boolean isShow = false;
-	String imageUrl = ""	
+	String imageUrl = ""
 	def ingestMediaThumbnailFiles = []
-		if (media.title==""||media.title==null){
-			return isShow;
+	if (media.title==""||media.title==null){
+		return isShow;
+	}
+
+	for (String key : showDict.keySet()) {
+
+		if(media.title.toLowerCase().startsWith(key.toLowerCase())){
+			isShow = true
+			imageUrl  = showDict.get(key).get(1);
+			break
 		}
-		
-		for (String key : showDict.keySet()) {
-			
-			if(media.title.toLowerCase().startsWith(key.toLowerCase())){
-				isShow = true
-				imageUrl  = showDict.get(key).get(1);
-				break
-			}
-			isShow = false
-		
-		 }
-		
-		if(!isShow){
-			imageUrl ="http://devapps.foxsportsasia.com/img-fsp/FICVOD.png"
+		isShow = false
+
+	}
+
+	if(!isShow){
+		imageUrl ="http://devapps.foxsportsasia.com/img-fsp/FICVOD.png"
+	}
+
+	if(!isRecordUpdate){
+		IngestMediaFile mediaFileThumb = new IngestMediaFile()
+		TransferInfo transferInfo = new TransferInfo()
+		transferInfo.supportsStreaming = true
+
+		IngestOptions ingestOptions = new IngestOptions()
+		ingestOptions.method = IngestMethod.Link
+
+		if (airingCategory == "VOD")
+		{
+			mediaFileThumb.sourceUrl = imageUrl
+			media.setCustomValue(null, "isLive",false)
 		}
-		
-		if(!isRecordUpdate){
-			IngestMediaFile mediaFileThumb = new IngestMediaFile()
-			TransferInfo transferInfo = new TransferInfo()
-			transferInfo.supportsStreaming = true
-	
-			IngestOptions ingestOptions = new IngestOptions()
-			ingestOptions.method = IngestMethod.Link
-	
-			if (airingCategory == "VOD")
-			{
-				mediaFileThumb.sourceUrl = imageUrl
-				media.setCustomValue(null, "isLive",false)
-			}
-			else
-			{
-				mediaFileThumb.sourceUrl = "http://devapps.foxsportsasia.com/img-fsp/FICLIVE.png"
-				media.setCustomValue(null, "isLive",true)
-			}
-			mediaFileThumb.assetTypes = ["Mezzanine Image"]
-			mediaFileThumb.transferInfo = transferInfo
-			mediaFileThumb.ingestOptions = ingestOptions
-	
-			ingestMediaThumbnailFiles << mediaFileThumb
-	
-			media.setThumbnails(ingestMediaThumbnailFiles.toArray(new IngestMediaFile[ingestMediaThumbnailFiles.size()]))
+		else
+		{
+			mediaFileThumb.sourceUrl = "http://devapps.foxsportsasia.com/img-fsp/FICLIVE.png"
+			media.setCustomValue(null, "isLive",true)
 		}
-		
-		
+		mediaFileThumb.assetTypes = ["Mezzanine Image"]
+		mediaFileThumb.transferInfo = transferInfo
+		mediaFileThumb.ingestOptions = ingestOptions
+
+		ingestMediaThumbnailFiles << mediaFileThumb
+
+		media.setThumbnails(ingestMediaThumbnailFiles.toArray(new IngestMediaFile[ingestMediaThumbnailFiles.size()]))
+	}
+
+	media.setCustomValue(null, "isShow", isShow);
 
 	return isShow
 }
