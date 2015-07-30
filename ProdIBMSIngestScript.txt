@@ -271,6 +271,7 @@ VodOffers.each
 			media.setCustomValue(null, "isChannel",false)
 			media.setCustomValue(null, "isFree", false)
 			media.setCustomValue(null, "isShow", isShow(showsDictionary,mediaTitle))
+			media.setCustomValue(null, "isExtraCam", false);
 			// check weather the media is show if yes set isShow = true & replace the default image for show
 			checkForShow(media,showsDictionary,it.VodOfferItem.specialAiringCategory.text(),update)
 
@@ -317,16 +318,24 @@ VodOffers.each
 			catArrList = []
 			CategoryInfo catInfo = new CategoryInfo()
 			String categoryname = "";
-			if (it.VodOfferItem.VodAsset.subGenre.text())
-				categoryname = replaceXmlSpecialCharacters(it.VodOfferItem.VodAsset.genre.text().toString())  +  "/" +  replaceXmlSpecialCharacters(it.VodOfferItem.VodAsset.subGenre.text().toString().replace("/","or"))
-			else
-				categoryname = it.VodOfferItem.VodAsset.genre.text()
+			String mainCategory = it.VodOfferItem.VodAsset.genre.text().toString();
+			String mainCategoryAfterChangingSoccer = mainCategory.toLowerCase().startsWith("Soccer".toLowerCase())?mainCategory.replaceAll("Soccer","Football"):mainCategory;
+			
+			if (it.VodOfferItem.VodAsset.subGenre.text()){
+				String subCategory = it.VodOfferItem.VodAsset.subGenre.text().toString();
+				String subCategoryAfterChangingSoccer = subCategory.toLowerCase().startsWith("Soccer".toLowerCase())?subCategory.replaceAll("Soccer","Football"):subCategory;
+//				categoryname = replaceXmlSpecialCharacters(it.VodOfferItem.VodAsset.genre.text().toString())  +  "/" +  replaceXmlSpecialCharacters(it.VodOfferItem.VodAsset.subGenre.text().toString().replace("/","or"))
+				categoryname = replaceXmlSpecialCharacters(mainCategoryAfterChangingSoccer)  +  "/" +  replaceXmlSpecialCharacters(subCategoryAfterChangingSoccer)
+			}else
+				categoryname = replaceXmlSpecialCharacters(mainCategoryAfterChangingSoccer);//it.VodOfferItem.VodAsset.genre.text()
 
 
 			if(categoryname == "Golf/Masters, The"){
 				catInfo.name = "Golf/Masters"
+			}else if(categoryname =="Golf/Open Championship, The"){
+				catInfo.name = "Golf/Open Championship"
 			}else{
-				catInfo.name = categoryname;
+				catInfo.name = categoryname;//categoryname.replaceAll("Soccer","Football");;
 			}
 
 			media.categories = catArrList << catInfo;
